@@ -8,18 +8,25 @@ import "./style.scss";
 const Select = ({
   selection,
   onChange,
-  name,
-  titleEmpty,
-  label,
+  name = "select",
+  titleEmpty = false,
+  label = "",
   type = "normal",
 }) => {
-  const [value, setValue] = useState();
+  const [value, setValue] = useState(titleEmpty ? "" : "Toutes");
   const [collapsed, setCollapsed] = useState(true);
-  const changeValue = (newValue) => {
-    onChange();
+
+  const handleSelectionChange = (newValue) => {
     setValue(newValue);
-    setCollapsed(newValue);
+    setCollapsed(true);
+    onChange(newValue);
   };
+
+  const handleCollapseToggle = (e) => {
+    e.preventDefault();
+    setCollapsed(!collapsed);
+  };
+
   return (
     <div className={`SelectContainer ${type}`} data-testid="select-testid">
       {label && <div className="label">{label}</div>}
@@ -31,16 +38,20 @@ const Select = ({
           {!collapsed && (
             <>
               {!titleEmpty && (
-                <li onClick={() => changeValue(null)}>
-                  <input defaultChecked={!value} name="selected" type="radio" />{" "}
+                <li onClick={() => handleSelectionChange(null)}>
+                  <input
+                    defaultChecked={!value}
+                    name={name}
+                    type="radio"
+                  />{" "}
                   Toutes
                 </li>
               )}
               {selection.map((s) => (
-                <li key={s} onClick={() => changeValue(s)}>
+                <li key={s} onClick={() => handleSelectionChange(s)}>
                   <input
                     defaultChecked={value === s}
-                    name="selected"
+                    name={name}
                     type="radio"
                   />{" "}
                   {s}
@@ -54,10 +65,7 @@ const Select = ({
           type="button"
           data-testid="collapse-button-testid"
           className={collapsed ? "open" : "close"}
-          onClick={(e) => {
-            e.preventDefault();
-            setCollapsed(!collapsed);
-          }}
+          onClick={handleCollapseToggle}
         >
           <Arrow />
         </button>
@@ -88,7 +96,7 @@ Select.propTypes = {
   titleEmpty: PropTypes.bool,
   label: PropTypes.string,
   type: PropTypes.string,
-}
+};
 
 Select.defaultProps = {
   onChange: () => null,
@@ -96,6 +104,6 @@ Select.defaultProps = {
   label: "",
   type: "normal",
   name: "select",
-}
+};
 
 export default Select;

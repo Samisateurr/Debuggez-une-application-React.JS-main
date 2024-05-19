@@ -19,7 +19,6 @@ const Form = ({ onSuccess, onError }) => {
       try {
         await mockContactApi();
         setSending(false);
-        setConfirmationMessage('Votre message a été envoyé avec succès !');
         onSuccess();
 
         // Définir un délai pour effacer le message de confirmation
