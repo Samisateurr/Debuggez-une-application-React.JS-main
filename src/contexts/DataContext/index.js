@@ -1,44 +1,40 @@
 import PropTypes from "prop-types";
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 
 const DataContext = createContext({});
 
 export const api = {
   loadData: async () => {
-    const json = await fetch("/events.json");
-    return json.json();
+    const response = await fetch("/events.json");
+    return response.json();
   },
 };
 
 export const DataProvider = ({ children }) => {
   const [error, setError] = useState(null);
   const [data, setData] = useState(null);
+
   const getData = useCallback(async () => {
     try {
-      setData(await api.loadData());
+      const fetchedData = await api.loadData();
+      const processedData = fetchedData.focus.map((event, index) => ({
+        ...event,
+        id: event.id || `${event.title}-${event.date}-${index}`,
+      }));
+      setData({ ...fetchedData, focus: processedData });
     } catch (err) {
       setError(err);
     }
   }, []);
+
   useEffect(() => {
-    if (data) return;
-    getData();
-  });
-  
+    if (!data) getData();
+  }, [data, getData]);
+
+  const contextValue = useMemo(() => ({ data, error }), [data, error]);
+
   return (
-    <DataContext.Provider
-      // eslint-disable-next-line react/jsx-no-constructed-context-values
-      value={{
-        data,
-        error,
-      }}
-    >
+    <DataContext.Provider value={contextValue}>
       {children}
     </DataContext.Provider>
   );
@@ -46,7 +42,7 @@ export const DataProvider = ({ children }) => {
 
 DataProvider.propTypes = {
   children: PropTypes.node.isRequired,
-}
+};
 
 export const useData = () => useContext(DataContext);
 
