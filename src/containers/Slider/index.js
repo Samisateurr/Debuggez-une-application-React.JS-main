@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useData } from "../../contexts/DataContext";
 import { getMonth } from "../../helpers/Date";
 import "./style.scss";
@@ -7,10 +7,33 @@ const Slider = () => {
   const { data, error } = useData();
   const [index, setIndex] = useState(0);
 
+  // Console.Log data et error
   useEffect(() => {
+    /* eslint-disable no-console */
     console.log("Data:", data);
     console.log("Error:", error);
+    /* eslint-enable no-console */
   }, [data, error]);
+
+  // Assurez-vous que les données ne sont triées qu'une seule fois en utilisant useMemo pour éviter l'erreur "Rendered more hooks than during the previous render"
+  const sortedData = useMemo(() => {
+    if (data && data.focus) {
+      return data.focus.sort((evtA, evtB) =>
+        new Date(evtA.date) > new Date(evtB.date) ? 1 : -1
+      );
+    }
+    return [];
+  }, [data]);
+
+  const nextCard = () => {
+    setIndex((prevIndex) => (prevIndex + 1) % sortedData.length);
+  };
+
+  // Mettre en place l'interval de changement de Card
+  useEffect(() => {
+    const intervalId = setInterval(nextCard, 5000);
+    return () => clearInterval(intervalId);
+  }, [sortedData.length]);
 
   if (error) {
     return <div>Error: {error.message}</div>;
@@ -20,23 +43,9 @@ const Slider = () => {
     return <div>Loading...</div>;
   }
 
-  // Assurez-vous que les données sont triées du plus ancien au plus récent
-  const byDateAsc = data.focus.sort((evtA, evtB) =>
-    new Date(evtA.date) > new Date(evtB.date) ? 1 : -1
-  );
-
-  const nextCard = () => {
-    setIndex((prevIndex) => (prevIndex + 1) % byDateAsc.length);
-  };
-
-  useEffect(() => {
-    const intervalId = setInterval(nextCard, 5000);
-    return () => clearInterval(intervalId);
-  }, [byDateAsc.length]);
-
   return (
     <div className="SlideCardList">
-      {byDateAsc.map((event, idx) => (
+      {sortedData.map((event, idx) => (
         <div
           key={event.id}
           className={`SlideCard SlideCard--${index === idx ? "display" : "hide"}`}
@@ -53,7 +62,7 @@ const Slider = () => {
       ))}
       <div className="SlideCard__paginationContainer">
         <div className="SlideCard__pagination">
-          {byDateAsc.map((event, radioIdx) => (
+          {sortedData.map((event, radioIdx) => (
             <input
               key={event.id}
               type="radio"
