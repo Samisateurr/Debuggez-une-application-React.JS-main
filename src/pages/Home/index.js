@@ -12,8 +12,10 @@ import Form from "../../containers/Form";
 import Modal from "../../containers/Modal";
 import { useData } from "../../contexts/DataContext";
 
+
 const Page = () => {
-  const {last} = useData()
+  const {data} = useData();
+  const last=data?.events[0]
   return <>
     <header>
       <Menu />
