@@ -16,12 +16,7 @@ export const DataProvider = ({ children }) => {
 
   const getData = useCallback(async () => {
     try {
-      const fetchedData = await api.loadData();
-      const processedData = fetchedData.focus.map((event, index) => ({
-        ...event,
-        id: event.id || `${event.title}-${event.date}-${index}`,
-      }));
-      setData({ ...fetchedData, focus: processedData });
+      setData(await api.loadData());
     } catch (err) {
       setError(err);
     }

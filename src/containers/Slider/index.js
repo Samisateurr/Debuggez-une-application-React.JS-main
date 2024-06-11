@@ -47,7 +47,7 @@ const Slider = () => {
     <div className="SlideCardList">
       {sortedData.map((event, idx) => (
         <div
-          key={event.id}
+          key={event.id ? `slide-${event.id}` : `slide-${idx}`} // Ensure unique key
           className={`SlideCard SlideCard--${index === idx ? "display" : "hide"}`}
         >
           <img src={event.cover} alt="forum" />
@@ -64,10 +64,10 @@ const Slider = () => {
         <div className="SlideCard__pagination">
           {sortedData.map((event, radioIdx) => (
             <input
-              key={event.id}
+              key={event.id ? `radio-${event.id}` : `radio-${radioIdx}`} // Ensure unique key
               type="radio"
               name="radio-button"
-              checked={index === radioIdx}
+              checked={index === radioIdx} 
               readOnly
             />
           ))}
