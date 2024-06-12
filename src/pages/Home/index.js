@@ -16,12 +16,14 @@ const Page = () => {
   const { data } = useData();
 
   // Ensure sortdata is always an array
-  
-  /* Fix: last event fixed */
-  const sortdata = Array.isArray(data?.events) ? data.events.sort((evtA, evtB) => 
+
+  /* fix: last event fixed */
+
+  // Tri des événements par date et Stockage du résultat du tri
+  const sortdata = Array.isArray(data?.events) ? data.events.sort((evtA, evtB) =>
     new Date(evtA.date) > new Date(evtB.date) ? -1 : 1
   ) : [];
-
+  // Récupération du dernier événement trié
   const last = sortdata.length > 0 ? sortdata[0] : null;
 
   return (
@@ -129,7 +131,7 @@ const Page = () => {
           <h3>Notre dernière prestation</h3>
           {last ? (
             <EventCard
-              /* Fix: last event fixed */
+              /* fix: last event fixed */
               imageSrc={last.cover}
               title={last.title}
               date={new Date(last.date)}

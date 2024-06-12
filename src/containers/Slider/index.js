@@ -19,12 +19,14 @@ const Slider = () => {
   const sortedData = useMemo(() => {
     if (data && data.focus) {
       return data.focus.sort((evtA, evtB) =>
+        // fix: slider la comparaison a été inversé pour trier les événements par ordre chronologique
         new Date(evtA.date) > new Date(evtB.date) ? 1 : -1
       );
     }
     return [];
   }, [data]);
 
+  // fix: slider const modifiée pour revenir à 0 après la dernière slide et éviter l'image blanche
   const nextCard = () => {
     setIndex((prevIndex) => (prevIndex + 1) % sortedData.length);
   };

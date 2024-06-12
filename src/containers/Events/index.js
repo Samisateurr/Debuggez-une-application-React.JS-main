@@ -13,17 +13,22 @@ const EventList = () => {
   const { data, error } = useData();
   const [type, setType] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
-
+// fix: filtrer les événements en fonction du type sélectionné
   const filteredEvents = data?.events.filter(event => !type || event.type === type) || [];
+  // Paginer les événements filtrés.
   const paginatedEvents = filteredEvents.slice((currentPage - 1) * PER_PAGE, currentPage * PER_PAGE);
 
   const changeType = (evtType) => {
     setCurrentPage(1);
     setType(evtType);
   };
-
+// Calculer le nombre total de pages en fonction du nombre d'événements filtrés et du nombre d'événements par page.
+// Math.ceil() est utilisé pour arrondir à la page supérieure
   const pageNumber = Math.ceil(filteredEvents.length / PER_PAGE);
-
+// Extraire une liste unique de types d'événements à partir des données d'événement.
+// data?.events.map() est utilisé pour mapper chaque événement vers son type.
+// new Set() est utilisé pour créer un ensemble unique de types d'événements, éliminant ainsi les doublons.
+// Array.from() est utilisé pour convertir l'ensemble en un tableau.
   const typeList = Array.from(new Set(data?.events.map((event) => event.type)));
 
   return (
